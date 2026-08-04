@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://3i4qf4bm1l3h"]
+
+[ext_resource type="Script" uid="uid://xpyphrxncaa8" path="res://hud.gd" id="1_8sq4i"]
+[ext_resource type="Texture2D" uid="uid://08aq8vq680so" path="res://assets/hud/HealthBarEmpty.png" id="2_640wx"]
+[ext_resource type="Texture2D" uid="uid://chrvlw3uxyxlw" path="res://assets/hud/HealthBar.png" id="3_a2258"]
+
+[node name="HUD" type="Control" unique_id=1935257184]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.4, 0.4)
+pivot_offset = Vector2(20, 20)
+script = ExtResource("1_8sq4i")
+
+[node name="HealthBar" type="TextureProgressBar" parent="." unique_id=824856397]
+propagate_maximum_size = true
+layout_mode = 1
+offset_right = 887.0
+offset_bottom = 235.0
+texture_under = ExtResource("2_640wx")
+texture_progress = ExtResource("3_a2258")
