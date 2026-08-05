@@ -26,6 +26,7 @@ var is_dead: bool = false
 
 func _ready() -> void:
 	sprite.animation_finished.connect(_on_animation_finished)
+	GameManager.died.connect(_die)
 	attack_shape.disabled = true
 	base_scale = Vector2(PLAYER_SCALE, PLAYER_SCALE)
 	sprite.scale = base_scale
@@ -168,15 +169,15 @@ func _die() -> void:
 func take_hit(amount: int) -> void:
 	if is_dead:
 		return
-	GameManager.current_health -= amount
-	if GameManager.current_health <= 0:
-		_die()
+	GameManager.take_damage(amount)
+	if is_dead:
 		return
 	state = State.HURT
 	sprite.modulate = Color(1, 0.3, 0.3)
 	await get_tree().create_timer(0.2).timeout
 	sprite.modulate = Color(1, 1, 1)
 	state = State.IDLE
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
 		GameManager.take_damage(20)

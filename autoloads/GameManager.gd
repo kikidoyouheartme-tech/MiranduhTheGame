@@ -1,5 +1,7 @@
 extends Node
 
+signal died
+
 var current_health: int = 100
 var max_health: int = 100
 var score: int = 0
@@ -15,7 +17,11 @@ func add_score(amount: int) -> void:
 	score += amount
 
 func take_damage(amount: int) -> void:
+	if current_health <= 0:
+		return
 	current_health = max(current_health - amount, 0)
+	if current_health == 0:
+		died.emit()
 
 func heal(amount: int) -> void:
 	current_health = min(current_health + amount, max_health)

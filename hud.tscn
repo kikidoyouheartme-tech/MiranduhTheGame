@@ -2,7 +2,8 @@
 
 [ext_resource type="Script" uid="uid://xpyphrxncaa8" path="res://hud.gd" id="1_8sq4i"]
 [ext_resource type="Texture2D" uid="uid://08aq8vq680so" path="res://assets/hud/HealthBarEmpty.png" id="2_640wx"]
-[ext_resource type="Texture2D" uid="uid://chrvlw3uxyxlw" path="res://assets/hud/HealthBar.png" id="3_a2258"]
+[ext_resource type="Texture2D" uid="uid://c4nj6xrsm5na8" path="res://assets/hud/HealthBarEmptyy.png" id="3_640wx"]
+[ext_resource type="Texture2D" uid="uid://b78ccuxke0hst" path="res://assets/hud/HealthBarFulll.png" id="4_a2258"]
 
 [node name="HUD" type="Control" unique_id=1935257184]
 layout_mode = 3
@@ -15,10 +16,18 @@ scale = Vector2(0.4, 0.4)
 pivot_offset = Vector2(20, 20)
 script = ExtResource("1_8sq4i")
 
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1111969476]
+layout_mode = 0
+offset_right = 887.0
+offset_bottom = 235.0
+texture = ExtResource("2_640wx")
+
 [node name="HealthBar" type="TextureProgressBar" parent="." unique_id=824856397]
 propagate_maximum_size = true
 layout_mode = 1
-offset_right = 887.0
-offset_bottom = 235.0
-texture_under = ExtResource("2_640wx")
-texture_progress = ExtResource("3_a2258")
+offset_left = 235.0
+offset_top = 82.500015
+offset_right = 1122.0
+offset_bottom = 317.5
+texture_under = ExtResource("3_640wx")
+texture_progress = ExtResource("4_a2258")
