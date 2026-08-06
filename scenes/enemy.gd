@@ -1,8 +1,7 @@
 extends CharacterBody2D
 
 @export var speed: float = 80.0
-@export var chase_range: float = 200.0
-@export var attack_range: float = 28.0
+@export var attack_range: float = 100.0
 @export var attack_cooldown: float = 1.2
 @export var attack_damage: int = 10
 @export var enemy_scale: float = 0.7
@@ -25,6 +24,7 @@ var attack_timer: float = 0.0
 var player: Node2D = null
 var attack_hitbox_base_x: float = 0.0
 var is_dead: bool = false
+var debug_timer: float = 0.0
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_hitbox: Area2D = $AttackHitbox
@@ -60,6 +60,20 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
+	if player == null or not is_instance_valid(player):
+		_find_player()
+
+	# Always keep facing the player every frame, regardless of state.
+	if player != null and is_instance_valid(player):
+		facing = 1 if player.global_position.x > global_position.x else -1
+		sprite.flip_h = facing < 0
+
+	debug_timer += delta
+	if debug_timer >= 0.5 and player != null and is_instance_valid(player):
+		debug_timer = 0.0
+		var x_dist: float = abs(player.global_position.x - global_position.x)
+		print("[Enemy] state=", State.keys()[state], " x_distance=", x_dist, " attack_range=", attack_range)
+
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 
@@ -77,23 +91,28 @@ func _physics_process(delta: float) -> void:
 		return
 
 	if player == null or not is_instance_valid(player):
-		_find_player()
 		_set_state(State.IDLE)
 		move_and_slide()
 		return
 
-	var distance: float = global_position.distance_to(player.global_position)
-	facing = 1 if player.global_position.x > global_position.x else -1
-	sprite.flip_h = facing < 0
+	# Use horizontal (X-axis) distance only — this is a side-scroller, and
+	# the player/enemy sprites can sit at slightly different Y anchor points,
+	# which made full 2D distance_to() never drop below their fixed vertical
+	# gap, making attack_range unreachable no matter how close you got in X.
+	var x_distance: float = abs(player.global_position.x - global_position.x)
 
-	if distance <= attack_range and attack_timer <= 0:
-		_start_attack()
-	elif distance <= chase_range:
+	if x_distance <= attack_range:
+		# Close enough to attack — hold ground, swing when cooldown allows.
+		velocity.x = 0
+		if attack_timer <= 0:
+			_start_attack()
+		else:
+			_set_state(State.IDLE)
+	else:
+		# Not in attack range — always walk toward the player, no matter
+		# how far away, so the enemy never "gives up" chasing.
 		velocity.x = facing * speed
 		_set_state(State.WALK)
-	else:
-		velocity.x = 0
-		_set_state(State.IDLE)
 
 	move_and_slide()
 

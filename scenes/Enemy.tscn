@@ -59,7 +59,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_1vja8")
 }],
-"loop": 1,
+"loop": 0,
 "name": &"idle",
 "speed": 5.0
 }, {
@@ -67,9 +67,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_iwav8")
 }],
-"loop": 1,
+"loop": 0,
 "name": &"punch",
-"speed": 5.0
+"speed": 6.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -111,11 +111,12 @@ size = Vector2(49.5, 225)
 size = Vector2(145, 233.5)
 
 [node name="Enemy" type="CharacterBody2D" unique_id=2029370716]
+collision_layer = 2
 script = ExtResource("1_ft8do")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=22338799]
 sprite_frames = SubResource("SpriteFrames_crmi7")
-animation = &"idle"
+animation = &"punch"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2060299825]
 position = Vector2(0, 1.5)
@@ -128,7 +129,7 @@ position = Vector2(89.25, 2.5)
 shape = SubResource("RectangleShape2D_tosky")
 debug_color = Color(0.9887628, 0, 0.30357113, 0.41960785)
 
-[node name="HurtBox" type="Area2D" parent="." unique_id=975476800]
+[node name="HurtBox" type="Area2D" parent="." unique_id=975476800 groups=["enemy_hurtbox"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox" unique_id=1517832664]
 position = Vector2(1.5, 1.25)

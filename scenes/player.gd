@@ -31,6 +31,12 @@ var is_dead: bool = false
 var block_regen_timer: float = 0.0
 var is_blocking: bool = false
 
+# Set exactly once per real keypress via _unhandled_input, and consumed
+# (reset to false) once per physics frame — this avoids Input.is_action_just_pressed
+# being read as "true" across more than one physics substep in the same frame,
+# which was causing a single tap to register as two separate attacks/combo hits.
+var attack_requested: bool = false
+
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var attack_shape: CollisionShape2D = $AttackHitbox/CollisionShape2D
@@ -38,12 +44,25 @@ var is_blocking: bool = false
 func _ready() -> void:
 	sprite.animation_finished.connect(_on_animation_finished)
 	GameManager.died.connect(_die)
-	attack_hitbox.area_entered.connect(_on_attack_hitbox_area_entered)
+	# NOTE: We do NOT connect attack_hitbox.area_entered here anymore.
+	# Damage is applied solely through the enemy's own HurtBox (hurt_box.area_entered
+	# in enemy.gd), which reads AttackHitbox's exported `damage` value directly.
+	# Connecting it on both sides caused every punch to register as two hits,
+	# since Godot fires area_entered independently on BOTH overlapping Area2Ds.
 	attack_shape.disabled = true
 	base_scale = Vector2(PLAYER_SCALE, PLAYER_SCALE)
 	sprite.scale = base_scale
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("attack") and not event.is_echo():
+		attack_requested = true
+
 func _physics_process(delta: float) -> void:
+	# Consume the attack request exactly once per physics frame, regardless
+	# of how many physics substeps run within a single rendered frame.
+	var attack_pressed_this_frame := attack_requested
+	attack_requested = false
+
 	if is_dead:
 		velocity.y += GRAVITY * delta
 		if is_on_floor():
@@ -83,7 +102,9 @@ func _physics_process(delta: float) -> void:
 			move_and_slide()
 			return
 
-		_check_attack_input()
+		if attack_pressed_this_frame:
+			combo_buffered = true
+
 		move_and_slide()
 		return
 
@@ -121,11 +142,11 @@ func _physics_process(delta: float) -> void:
 
 	# DEBUG: Shift + Attack simulates a lethal hit to test the death sequence.
 	# Remove this block once real enemies can call take_hit() themselves.
-	if Input.is_key_pressed(KEY_SHIFT) and Input.is_action_just_pressed("attack"):
+	if Input.is_key_pressed(KEY_SHIFT) and attack_pressed_this_frame:
 		take_hit(999)
 		return
 
-	if Input.is_action_just_pressed("attack") and is_on_floor():
+	if attack_pressed_this_frame and is_on_floor():
 		_start_attack()
 		move_and_slide()
 		return
@@ -189,10 +210,6 @@ func _start_attack() -> void:
 	attack_hitbox.position.x = abs(attack_hitbox.position.x) * facing
 	attack_shape.disabled = false
 
-func _check_attack_input() -> void:
-	if Input.is_action_just_pressed("attack"):
-		combo_buffered = true
-
 func _on_animation_finished() -> void:
 	if is_dead:
 		if sprite.animation == "death_knockback":
@@ -212,11 +229,6 @@ func _on_animation_finished() -> void:
 		state = State.IDLE
 		sprite.scale = base_scale
 		sprite.play("idle")
-
-func _on_attack_hitbox_area_entered(area: Area2D) -> void:
-	if area.is_in_group("enemy_hurtbox") and area.get_parent().has_method("take_hit"):
-		var damage: int = attack_hitbox.damage if attack_hitbox.get("damage") != null else 15
-		area.get_parent().take_hit(damage)
 
 func _die() -> void:
 	if is_dead:

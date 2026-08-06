@@ -487,12 +487,14 @@ size = Vector2(80.5, 158)
 size = Vector2(43.75, 165)
 
 [node name="Player" type="CharacterBody2D" unique_id=398790144 groups=["player"]]
+z_index = 1
+collision_layer = 2
 script = ExtResource("1_3li8b")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1315376847]
 position = Vector2(238.99998, 202.99998)
 sprite_frames = SubResource("SpriteFrames_tosky")
-animation = &"death_knockback"
+animation = &"attack1"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1365825873]
 position = Vector2(220.75, 208)
@@ -500,7 +502,7 @@ shape = SubResource("RectangleShape2D_crmi7")
 
 [node name="AttackHitbox" type="Area2D" parent="." unique_id=349769653 groups=["player_attack"]]
 script = ExtResource("22_b8lor")
-damage = 10
+damage = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox" unique_id=1301423199]
 position = Vector2(282, 206)

@@ -23,12 +23,13 @@ offset_bottom = 647.0
 color = Color(0.63795894, 0.4755184, 0.32290557, 1)
 
 [node name="Player" parent="." unique_id=553424609 instance=ExtResource("1_1pwbc")]
-position = Vector2(-165, 240)
+position = Vector2(-83, 197)
 
 [node name="HUD" parent="." unique_id=1935257184 instance=ExtResource("2_j08sa")]
 
 [node name="Enemy" parent="." unique_id=2029370716 instance=ExtResource("3_x4si1")]
-position = Vector2(710, 261)
-attack_range = 100.0
-enemy_scale = 1.0
-knockback_force = 200.0
+position = Vector2(588, 230)
+attack_range = 350.0
+enemy_scale = 0.8
+max_health = 25
+knockback_force = 100.0
