@@ -1,0 +1,136 @@
+[gd_scene format=3 uid="uid://dxf8yvjdouqy1"]
+
+[ext_resource type="Script" uid="uid://cowsd6mj62trr" path="res://scenes/enemy.gd" id="1_ft8do"]
+[ext_resource type="Texture2D" uid="uid://cf63h62jvos8m" path="res://assets/sprites/enemies/deadprisoner1.png" id="1_mpr68"]
+[ext_resource type="Texture2D" uid="uid://c70tq4ll6vjcl" path="res://assets/sprites/enemies/Prisoner2-walkdsfvfew-trimmed.png" id="2_ft8do"]
+[ext_resource type="Texture2D" uid="uid://c8hdpkt1k182r" path="res://assets/sprites/enemies/Prisoner2-walk-trimmed.png" id="3_5wwv6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1vja8"]
+atlas = ExtResource("2_ft8do")
+region = Rect2(0, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iwav8"]
+atlas = ExtResource("2_ft8do")
+region = Rect2(256, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1i2q2"]
+atlas = ExtResource("3_5wwv6")
+region = Rect2(0, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ly5gv"]
+atlas = ExtResource("3_5wwv6")
+region = Rect2(256, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_82o86"]
+atlas = ExtResource("3_5wwv6")
+region = Rect2(512, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1gqeq"]
+atlas = ExtResource("3_5wwv6")
+region = Rect2(768, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_isvm2"]
+atlas = ExtResource("3_5wwv6")
+region = Rect2(0, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gr8dl"]
+atlas = ExtResource("3_5wwv6")
+region = Rect2(256, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_axa8o"]
+atlas = ExtResource("3_5wwv6")
+region = Rect2(512, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4iqch"]
+atlas = ExtResource("3_5wwv6")
+region = Rect2(768, 256, 256, 256)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_crmi7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_mpr68")
+}],
+"loop": 0,
+"name": &"dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1vja8")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iwav8")
+}],
+"loop": 1,
+"name": &"punch",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1i2q2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ly5gv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_82o86")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1gqeq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_isvm2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gr8dl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_axa8o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4iqch")
+}],
+"loop": 1,
+"name": &"walk",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_crmi7"]
+size = Vector2(122, 231)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tosky"]
+size = Vector2(49.5, 225)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ym6nk"]
+size = Vector2(145, 233.5)
+
+[node name="Enemy" type="CharacterBody2D" unique_id=2029370716]
+script = ExtResource("1_ft8do")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=22338799]
+sprite_frames = SubResource("SpriteFrames_crmi7")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2060299825]
+position = Vector2(0, 1.5)
+shape = SubResource("RectangleShape2D_crmi7")
+
+[node name="AttackHitbox" type="Area2D" parent="." unique_id=1559783569]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox" unique_id=2110411771]
+position = Vector2(89.25, 2.5)
+shape = SubResource("RectangleShape2D_tosky")
+debug_color = Color(0.9887628, 0, 0.30357113, 0.41960785)
+
+[node name="HurtBox" type="Area2D" parent="." unique_id=975476800]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox" unique_id=1517832664]
+position = Vector2(1.5, 1.25)
+shape = SubResource("RectangleShape2D_ym6nk")
+debug_color = Color(0.79832554, 0.37494642, 0, 0.41960785)

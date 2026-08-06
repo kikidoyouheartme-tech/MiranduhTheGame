@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dmtn5qticwfm2" path="res://scenes/Player.tscn" id="1_1pwbc"]
 [ext_resource type="PackedScene" uid="uid://3i4qf4bm1l3h" path="res://hud.tscn" id="2_j08sa"]
+[ext_resource type="PackedScene" uid="uid://dxf8yvjdouqy1" path="res://scenes/Enemy.tscn" id="3_x4si1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_crmi7"]
 size = Vector2(1149.5, 133)
@@ -25,3 +26,9 @@ color = Color(0.63795894, 0.4755184, 0.32290557, 1)
 position = Vector2(-165, 240)
 
 [node name="HUD" parent="." unique_id=1935257184 instance=ExtResource("2_j08sa")]
+
+[node name="Enemy" parent="." unique_id=2029370716 instance=ExtResource("3_x4si1")]
+position = Vector2(710, 261)
+attack_range = 100.0
+enemy_scale = 1.0
+knockback_force = 200.0
