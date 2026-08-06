@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bbj0xcd473rdy" path="res://assets/sprites/punch/spritgegergregregerergregregegrgsdfdsregesheet.png" id="4_khinc"]
 [ext_resource type="Texture2D" uid="uid://d0yrahj0xn6oy" path="res://assets/sprites/Pop Smoke-walk-trimmed.png" id="4_mdl7e"]
 [ext_resource type="Texture2D" uid="uid://imct2njqm5ei" path="res://assets/sprites/punch/spritgegergregregergsdfdsregesheet.png" id="5_bruh7"]
+[ext_resource type="Texture2D" uid="uid://cl7n6bep8ilm" path="res://assets/sprites/Pop Smokfewfewfe-idle.png" id="6_b8lor"]
 [ext_resource type="Texture2D" uid="uid://dqt7m4m50tmc8" path="res://assets/sprites/death/03.png" id="6_gv3ic"]
 [ext_resource type="Texture2D" uid="uid://0hftog5crhf0" path="res://assets/sprites/death/04.png" id="7_b8lor"]
 [ext_resource type="Texture2D" uid="uid://bsiung82u0odc" path="res://assets/sprites/death/05.png" id="8_6e537"]
@@ -35,6 +36,10 @@ region = Rect2(0, 0, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_b1r6t"]
 atlas = ExtResource("5_bruh7")
+region = Rect2(0, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_akpgi"]
+atlas = ExtResource("6_b8lor")
 region = Rect2(0, 0, 256, 256)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3li8b"]
@@ -247,6 +252,14 @@ animations = [{
 "loop": 0,
 "name": &"attack3",
 "speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_akpgi")
+}],
+"loop": 1,
+"name": &"block",
+"speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -474,9 +487,7 @@ script = ExtResource("1_3li8b")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1315376847]
 position = Vector2(238.99998, 202.99998)
 sprite_frames = SubResource("SpriteFrames_tosky")
-animation = &"death_ground"
-frame = 9
-frame_progress = 1.0
+animation = &"death_knockback"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1365825873]
 position = Vector2(220.75, 208)

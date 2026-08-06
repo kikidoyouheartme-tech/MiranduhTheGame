@@ -10,7 +10,16 @@ const PLAYER_SCALE := 0.7     # overall size of the player, adjust to size down/
 const KNOCKBACK_FORCE := 250.0
 const KNOCKBACK_FRICTION := 800.0
 
-enum State { IDLE, WALK, JUMP, ATTACK, HURT }
+# --- Block/guard tuning ---
+const BLOCK_STAMINA_MAX := 100.0
+const BLOCK_DRAIN_PER_SEC := 25.0   # stamina lost per second just holding block
+const BLOCK_HIT_COST := 20.0        # extra stamina lost each time a blocked hit lands
+const BLOCK_REGEN_PER_SEC := 15.0   # stamina regen when not blocking
+const BLOCK_REGEN_DELAY := 0.6      # seconds after releasing block before regen starts
+const CHIP_DAMAGE_PERCENT := 0.2    # % of incoming damage that still gets through while blocking
+const GUARD_BREAK_STUN := 0.8       # seconds stunned/vulnerable after guard breaks
+
+enum State { IDLE, WALK, JUMP, ATTACK, HURT, BLOCK, GUARD_BREAK }
 var state: State = State.IDLE
 var facing: int = 1
 
@@ -19,6 +28,10 @@ var combo_buffered: bool = false
 var combo_timer: float = 0.0
 var base_scale: Vector2
 var is_dead: bool = false
+
+var block_stamina: float = BLOCK_STAMINA_MAX
+var block_regen_timer: float = 0.0
+var is_blocking: bool = false
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_hitbox: Area2D = $AttackHitbox
@@ -47,6 +60,13 @@ func _physics_process(delta: float) -> void:
 	else:
 		combo_step = 0
 
+	_update_block_stamina(delta)
+
+	if state == State.GUARD_BREAK:
+		velocity.x = move_toward(velocity.x, 0, KNOCKBACK_FRICTION * delta)
+		move_and_slide()
+		return
+
 	if state == State.ATTACK:
 		var input_dir := Input.get_axis("ui_left", "ui_right")
 		velocity.x = input_dir * SPEED * 0.5
@@ -71,6 +91,22 @@ func _physics_process(delta: float) -> void:
 	if state == State.HURT:
 		move_and_slide()
 		return
+
+	# --- Block handling ---
+	if Input.is_action_pressed("block") and is_on_floor() and block_stamina > 0:
+		if not is_blocking:
+			is_blocking = true
+			state = State.BLOCK
+			velocity.x = 0
+			sprite.scale = base_scale
+			sprite.play("block")
+		velocity.x = 0
+		move_and_slide()
+		return
+	elif is_blocking:
+		is_blocking = false
+		state = State.IDLE
+		sprite.play("idle")
 
 	var input_dir := Input.get_axis("ui_left", "ui_right")
 
@@ -97,6 +133,31 @@ func _physics_process(delta: float) -> void:
 
 	_update_state()
 	move_and_slide()
+
+func _update_block_stamina(delta: float) -> void:
+	if is_blocking:
+		block_stamina = max(block_stamina - BLOCK_DRAIN_PER_SEC * delta, 0)
+		block_regen_timer = BLOCK_REGEN_DELAY
+		if block_stamina <= 0:
+			_guard_break()
+	else:
+		if block_regen_timer > 0:
+			block_regen_timer -= delta
+		else:
+			block_stamina = min(block_stamina + BLOCK_REGEN_PER_SEC * delta, BLOCK_STAMINA_MAX)
+
+func _guard_break() -> void:
+	is_blocking = false
+	state = State.GUARD_BREAK
+	block_regen_timer = BLOCK_REGEN_DELAY
+	sprite.scale = base_scale
+	sprite.modulate = Color(1, 0.6, 0.6)
+	sprite.play("hurt") if sprite.sprite_frames.has_animation("hurt") else sprite.play("idle")
+	await get_tree().create_timer(GUARD_BREAK_STUN).timeout
+	sprite.modulate = Color(1, 1, 1)
+	if state == State.GUARD_BREAK:
+		state = State.IDLE
+		sprite.play("idle")
 
 func _update_state() -> void:
 	var new_state: State
@@ -169,6 +230,17 @@ func _die() -> void:
 func take_hit(amount: int) -> void:
 	if is_dead:
 		return
+
+	if is_blocking and state == State.BLOCK:
+		var chip: int = int(ceil(amount * CHIP_DAMAGE_PERCENT))
+		GameManager.take_damage(chip)
+		block_stamina = max(block_stamina - BLOCK_HIT_COST, 0)
+		if block_stamina <= 0:
+			_guard_break()
+		if is_dead:
+			return
+		return
+
 	GameManager.take_damage(amount)
 	if is_dead:
 		return
